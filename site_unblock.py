@@ -47,7 +47,7 @@ def proxy_thread(conn, client_addr):
   	#path = "GET / HTTP/1.1\r\n"
   	#fake_request = path + request[line2_idx:host_idx] + "dummy.com" +request[host_idx+len(host):]
   	#fake_request = request[:host_idx] + "dummy.com" + request[host_idx+len(host):]
-  	fake_request = "GET / HTTP/1.1\r\nHost: test.gilgil.net\r\n\r\n"
+  	fake_request = "GET / HTTP/1.1\r\nHost: dummy.com\r\n\r\n"
   	fake_request += request
   	if(DEBUG):
 	  	print "[+] request"
@@ -67,7 +67,10 @@ def proxy_thread(conn, client_addr):
       data = s.recv(MAX_DATA_RECV)
       if (len(data) > 0):
         # send to browser
+        if data.count('HTTP/1.1') > 1:
+        	data = data[3:]
         idx = data.find('HTTP/1.1 200 OK')
+
         if idx != -1:
         	response = data[idx:]
         else:
@@ -76,7 +79,7 @@ def proxy_thread(conn, client_addr):
         	else:
         		continue
         #print "[+] response"
-        #print response
+        print response
         conn.send(response)
       else:
         break

@@ -68,6 +68,7 @@ def proxy_thread(conn, client_addr):
       if (len(data) > 0):
         # send to browser
         if data.count('HTTP/1.1') > 1:
+        	print "[+] response count : ",data.count('HTTP/1.1')
         	data = data[3:]
         idx = data.find('HTTP/1.1 200 OK')
 
@@ -79,7 +80,7 @@ def proxy_thread(conn, client_addr):
         	else:
         		continue
         #print "[+] response"
-        print response
+        #print response
         conn.send(response)
       else:
         break

@@ -64,21 +64,23 @@ def proxy_thread(conn, client_addr):
     while 1:
       # receive data from web server
       #print "[+] ", cnt, "th response"
+      #print "[+] Host: ", s.gethostname()
       data = s.recv(MAX_DATA_RECV)
       if (len(data) > 0):
         # send to browser
         if data.count('HTTP/1.1') > 1:
-        	print "[+] response count : ",data.count('HTTP/1.1')
-        	data = data[3:]
+        	#print "[+] response count : ",data.count('HTTP/1.1')
+        	if data.find('HTTP/1.1 404 Not Found'):
+        		print "[+] filterNot Found"
+        		print data
+        		data = data[3:]
+
         idx = data.find('HTTP/1.1 200 OK')
 
         if idx != -1:
         	response = data[idx:]
         else:
-        	if data.find('HTTP/1.1 404 Not Found') == -1:
-        		response = data
-        	else:
-        		continue
+        	continue
         #print "[+] response"
         #print response
         conn.send(response)
@@ -96,21 +98,22 @@ def proxy_thread(conn, client_addr):
 
 #********* CONSTANT VARIABLES *********
 BACKLOG = 50            # how many pending connections queue will hold
-MAX_DATA_RECV = 4096    # max number of bytes we receive at once
+MAX_DATA_RECV = 4096 * 10   # max number of bytes we receive at once
 DEBUG = False          # set to True to see the debug msgs
 
 #********* MAIN PROGRAM ***************
 def main():
 
   # check the length of command running
+  '''
   if (len(sys.argv) < 2):
     print "usage: proxy <port>"
     return sys.stdout
-
+  '''
   # host and port info.
   host = '127.0.0.1'               # blank for localhost
-  port = int(sys.argv[1]) # port from argument
-
+  #port = int(sys.argv[1]) # port from argument
+  port = 8080
   try:
     # create a socket
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
